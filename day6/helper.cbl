@@ -3,23 +3,30 @@
 
        DATA DIVISION.
            LINKAGE SECTION.
-           01 divider PIC 9(5).
-           01 modo PIC 9(5).
-           01 input1 PIC 9(5).
-           01 input2 PIC 9(5).
-           01 input3 PIC 9(5).
-           01 input4 PIC 9(5).
-           01 m1 PIC 9(5) VALUE 1.
-           01 m2 PIC 9(5) VALUE 1.
-           01 m3 PIC 9(5) VALUE 1.
-           01 m4 PIC 9(5) VALUE 1.
+           01 digit PIC 9(1).
+           01 digits PIC 9(1).
+           01 inputn PIC 9(4).
+           01 min PIC 9(1).
+           01 max PIC 9(1).
+           01 pmin PIC 9(1).
+           01 pmax PIC 9(1).
            01 result PIC 9(8).
 
-       PROCEDURE DIVISION USING modo input1 input2 input3 input4 result.
-           COMPUTE divider1 = FUNCTION INTEGER(
+       PROCEDURE DIVISION USING digit inputn pmin pmax min max result.
+           COMPUTE digits = FUNCTION INTEGER(
             FUNCTION LOG10(
-             FUNCTION NUMVAL(input1)
+             FUNCTION NUMVAL(inputn)
             )) + 1
+            IF pmin = min THEN
+             result = inputn(digit:1)
+            END-IF
+
+
+
+
+
+
+
            COMPUTE divider2 = FUNCTION INTEGER(
             FUNCTION LOG10(
              FUNCTION NUMVAL(input2)
