@@ -32,7 +32,7 @@
             01 divider PIC 9(10) VALUE 0.
             01 leadzs PIC 9(2) VALUE 0.
             01 repeats PIC 9(2) VALUE 0.
-            01 counter PIC 9(10) VALUE 0.
+            01 counter PIC 9(18) VALUE 0.
             01 strcat PIC X(20) VALUE SPACES.
 
        PROCEDURE DIVISION.
