@@ -17,10 +17,11 @@
 
            WORKING-STORAGE SECTION.
             01 eof PIC 9(1) VALUE 0.
-            01 clicks PIC s9(9) VALUE 0.
-            01 counter PIC 9(5) VALUE 0.
-            01 magnitude PIC 9(4) VALUE 0.
-            01 posi PIC s9(9) VALUE 50.
+            01 clicks PIC 9(4) VALUE 0.
+            01 counter PIC 9(7) VALUE 0.
+            01 magnitude PIC s9(5) VALUE 0.
+            01 posi PIC s9(4) VALUE 50.
+            01 posinew PIC s9(4) VALUE 0.
             01 rotation PIC s9(1) VALUE 0.
 
        PROCEDURE DIVISION.
@@ -38,11 +39,31 @@
                END-IF
               END-IF
               MOVE rawmagnitude TO magnitude
-              COMPUTE posi = posi + (rotation * magnitude)
-              DIVIDE 100 INTO posi GIVING clicks REMAINDER posi
-              IF posi = 0 THEN
+              COMPUTE magnitude = rotation * magnitude
+      *       DISPLAY magnitude
+              DIVIDE 100 INTO magnitude GIVING clicks
+               REMAINDER magnitude
+      *       DISPLAY clicks " " magnitude
+              COMPUTE counter = counter + clicks
+              DISPLAY counter
+      *       DISPLAY posi
+              COMPUTE posinew = posi + magnitude
+             DISPLAY FUNCTION SIGN(posinew)
+             DISPLAY FUNCTION SIGN(posi)
+              IF posinew = 0 OR
+              (
+               (FUNCTION SIGN(posinew) NOT= FUNCTION SIGN(posi))
+               AND posi NOT= 0
+              )
+              THEN
                COMPUTE counter = counter + 1
               END-IF
+              DISPLAY counter
+              DIVIDE 100 INTO posinew GIVING clicks REMAINDER posi
+              COMPUTE posi = FUNCTION MOD(posi, 100)
+              DISPLAY posi
+              COMPUTE counter = counter + clicks
+              DISPLAY counter
            END-PERFORM.
            CLOSE inputfile.
            DISPLAY "Dial was on 0: " counter
