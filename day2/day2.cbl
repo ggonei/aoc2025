@@ -54,16 +54,19 @@
 
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
             UNSTRING myitem(idx) DELIMITED BY "-" INTO min,max
+            DISPLAY min "->" max
+            COMPUTE newidx = 10 ** FUNCTION
+                             INTEGER((FUNCTION LOG10(max) + 1) / 2) - 1
             PERFORM VARYING startpos FROM min BY 1 UNTIL startpos > max
-             COMPUTE newidx = 10 ** FUNCTION
-                              INTEGER((FUNCTION LOG10(max) + 1) / 2) - 1
              PERFORM VARYING endpos FROM 1 BY 1 UNTIL endpos > newidx
               MOVE 0 TO diffpos
               MOVE 0 TO diffpos2
               INSPECT endpos TALLYING diffpos FOR LEADING ZEROES
               INSPECT startpos TALLYING diffpos2
                FOR ALL endpos(diffpos + 1:)
-              IF diffpos2 > 1 THEN
+              IF diffpos2 = 2 AND
+               FUNCTION LOG10(newidx) < LENGTH OF endpos(diffpos + 1:)
+              THEN
                MOVE SPACES TO strcat
                STRING endpos(diffpos + 1:) DELIMITED BY SPACE
                       endpos(diffpos + 1:) DELIMITED BY SPACE
