@@ -34,6 +34,7 @@
             01 curidx PIC 9(3) VALUE 100.
             01 divider PIC 9(2) VALUE 1.
             01 extrad PIC 9(3) VALUE 0.
+            01 remchar PIC X(1).
 
        PROCEDURE DIVISION.
            MOVE 1 TO posidx
@@ -100,11 +101,15 @@
                    UNTIL posidx > divider
                     IF nstrtrunc(posidx + 1:1) > nstrtrunc(posidx:1)
                     THEN
+                     MOVE nstrtrunc(posidx:1) TO remchar
                      MOVE nstrtrunc(posidx + 1:1) TO nstrtrunc(posidx:1)
+                     MOVE remchar TO nstrtrunc(posidx + 1:1)
                     END-IF
                    END-PERFORM
+                   DISPLAY posx ":" nstrtrunc
                    SUBTRACT 1 FROM extrad
                   END-PERFORM
+                  DISPLAY posx ":" nstrtrunc
                   PERFORM VARYING posidx FROM curidx BY 1
                    UNTIL posidx > nbatts
                    IF posv(posidx) = 0 THEN
