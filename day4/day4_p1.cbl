@@ -20,7 +20,7 @@
              02 strip OCCURS 10 TIMES INDEXED BY posix.
               03 posy PIC X(10).
             01 posiy PIC s9(9).
-            01 cnt PIC 9(2) VALUE 0.
+            01 cnt PIC 9(5) VALUE 0.
 
        PROCEDURE DIVISION.
            OPEN INPUT inputfile.
@@ -36,12 +36,23 @@
 
            PERFORM VARYING posix FROM 1 BY 1 UNTIL posix > 10
             PERFORM VARYING posiy FROM 1 BY 1 UNTIL posiy > 10
+             DISPLAY posix "," posiy
              IF (posix = 1 OR posix = 10) AND (posiy = 1 OR posiy = 10)
              THEN
               IF posy(posix)(posiy:1) = "@" THEN DISPLAY "@" END-IF
              END-IF
-             DISPLAY posix "," posiy
+             IF posy(posix)(posiy:1) = "@" THEN
+              DISPLAY posy(posix - 1)(posiy - 1:1)
+              DISPLAY posy(posix - 1)(posiy:1)
+              DISPLAY posy(posix - 1)(posiy + 1:1)
+              DISPLAY posy(posix)(posiy - 1:1)
+              DISPLAY posy(posix)(posiy + 1:1)
+              DISPLAY posy(posix + 1)(posiy - 1:1)
+              DISPLAY posy(posix + 1)(posiy:1)
+              DISPLAY posy(posix + 1)(posiy + 1:1)
+             END-IF
             END-PERFORM
            END-PERFORM.
+           DISPLAY cnt.
 
            STOP RUN.
