@@ -29,6 +29,7 @@
             01 iterval PIC 9(10) VALUE 0.
             01 checkmin PIC 9(5) VALUE 0.
             01 checkmax PIC 9(5) VALUE 0.
+            01 divider PIC 9(10) VALUE 0.
             01 leadzs PIC 9(2) VALUE 0.
             01 repeats PIC 9(2) VALUE 0.
             01 counter PIC 9(10) VALUE 0.
@@ -60,22 +61,16 @@
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
             UNSTRING myitem(idx) DELIMITED BY "-" INTO min,max
             DISPLAY min "->" max
-            COMPUTE checkmin = min / ( 10 **
-             (
-              FUNCTION INTEGER(FUNCTION LOG10(min)) + 1 -
-              FUNCTION INTEGER(
-               (FUNCTION INTEGER(FUNCTION LOG10(min)) + 1)
-              / 2)
-             )
-            )
-            COMPUTE checkmax = max / ( 10 **
+            COMPUTE divider = 10 **
              (
               FUNCTION INTEGER(FUNCTION LOG10(max)) -
               FUNCTION INTEGER(
                (FUNCTION INTEGER(FUNCTION LOG10(max)))
               / 2)
              )
-            )
+            COMPUTE checkmin = min / divider
+            IF checkmin = 0 THEN MOVE 1 TO checkmin
+            COMPUTE checkmax = max / divider
             DISPLAY checkmin "->" checkmax
             PERFORM VARYING iterval FROM min BY 1 UNTIL iterval > max
              PERFORM VARYING echoed FROM checkmin BY 1
@@ -85,18 +80,17 @@
               INSPECT echoed TALLYING leadzs FOR LEADING ZEROES
               INSPECT iterval TALLYING repeats
                FOR ALL echoed(leadzs + 1:)
-              IF repeats = 2 AND
-               FUNCTION LOG10(checkmax) < LENGTH OF endpos(leadzs + 1:)
-              THEN
-               MOVE SPACES TO strcat
-               STRING echoed(leadzs + 1:) DELIMITED BY SPACE
-                      echoed(leadzs + 1:) DELIMITED BY SPACE
-                INTO strcat
-               END-STRING
-               IF FUNCTION NUMVAL(strcat) = FUNCTION NUMVAL(iterval)
-                THEN
-                 ADD iterval TO counter
-               END-IF
+              IF repeats = 2
+               THEN
+                MOVE SPACES TO strcat
+                STRING echoed(leadzs + 1:) DELIMITED BY SPACE
+                       echoed(leadzs + 1:) DELIMITED BY SPACE
+                 INTO strcat
+                END-STRING
+                IF FUNCTION NUMVAL(strcat) = FUNCTION NUMVAL(iterval)
+                 THEN
+                  ADD iterval TO counter
+                END-IF
               END-IF
              END-PERFORM
             END-PERFORM
