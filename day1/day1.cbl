@@ -13,12 +13,13 @@
             FD inputfile.
             01 instruction.
              02 direction PIC A(1).
-             02 magnitude PIC 9(3).
+             02 rawmagnitude PIC X(4).
 
            WORKING-STORAGE SECTION.
             01 eof PIC 9(1) VALUE 0.
-            01 counter PIC S9(9) VALUE 50.
-            01 rotation PIC S9(1) VALUE 0.
+            01 counter PIC s9(9) VALUE 50.
+            01 magnitude PIC 9(4) VALUE 0.
+            01 rotation PIC s9(1) VALUE 0.
 
        PROCEDURE DIVISION.
            OPEN INPUT inputfile
@@ -35,7 +36,8 @@
                 MOVE -1 TO rotation
                END-IF
               END-IF
-              COMPUTE counter = counter + magnitude
+              MOVE rawmagnitude TO magnitude
+              COMPUTE counter = counter + (rotation * magnitude)
               DISPLAY magnitude
            END-PERFORM.
            DISPLAY counter.
