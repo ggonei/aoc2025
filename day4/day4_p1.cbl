@@ -20,6 +20,11 @@
              02 strip OCCURS 10 TIMES INDEXED BY posix.
               03 posy PIC X(10).
             01 posiy PIC s9(9).
+            01 poscnt PIC 9(1) VALUE 0.
+            01 domx PIC X(1) VALUE "Y".
+            01 dopx PIC X(1) VALUE "Y".
+            01 domy PIC X(1) VALUE "Y".
+            01 dopy PIC X(1) VALUE "Y".
             01 cnt PIC 9(5) VALUE 0.
 
        PROCEDURE DIVISION.
@@ -36,20 +41,44 @@
 
            PERFORM VARYING posix FROM 1 BY 1 UNTIL posix > 10
             PERFORM VARYING posiy FROM 1 BY 1 UNTIL posiy > 10
-             DISPLAY posix "," posiy
-             IF (posix = 1 OR posix = 10) AND (posiy = 1 OR posiy = 10)
-             THEN
-              IF posy(posix)(posiy:1) = "@" THEN DISPLAY "@" END-IF
-             END-IF
+             MOVE 0 TO poscnt
              IF posy(posix)(posiy:1) = "@" THEN
-              DISPLAY posy(posix - 1)(posiy - 1:1)
-              DISPLAY posy(posix - 1)(posiy:1)
-              DISPLAY posy(posix - 1)(posiy + 1:1)
-              DISPLAY posy(posix)(posiy - 1:1)
-              DISPLAY posy(posix)(posiy + 1:1)
-              DISPLAY posy(posix + 1)(posiy - 1:1)
-              DISPLAY posy(posix + 1)(posiy:1)
-              DISPLAY posy(posix + 1)(posiy + 1:1)
+              IF posix > 1 THEN MOVE "Y" TO domx ELSE MOVE "N" TO domx
+              END-IF
+              IF posix < 10 THEN MOVE "Y" TO dopx ELSE MOVE "N" TO dopx
+              END-IF
+              IF posiy > 1 THEN
+               IF domx = "Y" AND posy(posix - 1)(posiy - 1:1) = "@" THEN
+                ADD 1 TO poscnt
+               END-IF
+               IF posy(posix)(posiy - 1:1) = "@" THEN
+                ADD 1 TO poscnt
+               END-IF
+               IF dopx = "Y" AND posy(posix + 1)(posiy - 1:1) = "@" THEN
+                ADD 1 TO poscnt
+               END-IF
+              END-IF
+              IF posiy < 10 THEN
+               IF domx = "Y" AND posy(posix - 1)(posiy + 1:1) = "@" THEN
+                ADD 1 TO poscnt
+               END-IF
+               IF posy(posix)(posiy + 1:1) = "@" THEN
+                ADD 1 TO poscnt
+               END-IF
+               IF dopx = "Y" AND posy(posix + 1)(posiy + 1:1) = "@" THEN
+                ADD 1 TO poscnt
+               END-IF
+              END-IF
+              IF domx = "Y" AND posy(posix - 1)(posiy:1) = "@" THEN
+               ADD 1 TO poscnt
+              END-IF
+              IF dopx = "Y" AND posy(posix + 1)(posiy:1) = "@" THEN
+               ADD 1 TO poscnt
+              END-IF
+              IF poscnt < 4 THEN
+               DISPLAY poscnt
+               ADD 1 TO cnt
+              END-IF
              END-IF
             END-PERFORM
            END-PERFORM.
