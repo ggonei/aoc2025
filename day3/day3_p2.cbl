@@ -5,7 +5,7 @@
            INPUT-OUTPUT SECTION.
             FILE-CONTROL.
              SELECT inputfile ASSIGN TO '/'-
-           'Users/georgeoneill/ess-dmsc/aoc2025/day3/input'
+           'Users/georgeoneill/ess-dmsc/aoc2025/day3/inputtst'
               ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
@@ -23,8 +23,8 @@
             01 posi PIC 9(3).
             01 posf PIC 9(3).
             01 nstrtrunc PIC X(102).
-            01 total PIC 9(10) VALUE 0.
-            01 val PIC 9(2) VALUE 0.
+            01 total PIC 9(18) VALUE 0.
+            01 val PIC 9(12) VALUE 0.
 
        PROCEDURE DIVISION.
            OPEN INPUT inputfile.
@@ -47,9 +47,6 @@
                 MOVE 0 TO posi
                 MOVE nstr TO nstrtrunc
                ELSE
-                COMPUTE val = FUNCTION NUMVAL(nstr(posi:1)) * 10
-                + FUNCTION NUMVAL(nstr(posf:1))
-                COMPUTE total = total + val
                 DISPLAY "NEXT"
                END-IF
               END-PERFORM
@@ -60,7 +57,7 @@
 
            Findhigh.
             PERFORM VARYING idx FROM 1 BY 1
-             UNTIL idx > LENGTH OF nstrtrunc - 1
+             UNTIL idx > (LENGTH OF nstrtrunc - 12)
               IF nstrtrunc(idx:1) = highn
                IF posi = 0
                 MOVE idx TO posi
