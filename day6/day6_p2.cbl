@@ -35,6 +35,12 @@
               03 ptritem PIC 9(5) OCCURS 2000 TIMES INDEXED BY ptridx.
 
        PROCEDURE DIVISION.
+      *Day 6 summary:
+      *Tried to get complicated here with functions and a 'class'
+      *The idea being that I would have to remember alignments of digits
+      *But since the only operations were commutative it was skippable
+      *Again it feels like COBOL is well suited to these tasks
+      *And this is a bit more efficient than previous days
            OPEN INPUT inputfile.
            MOVE 1 TO linen
            PERFORM UNTIL eofile > 0
