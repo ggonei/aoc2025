@@ -5,7 +5,7 @@
            INPUT-OUTPUT SECTION.
             FILE-CONTROL.
              SELECT inputfile ASSIGN TO '/'-
-           'Users/georgeoneill/ess-dmsc/aoc2025/day6/inputtst'
+           'Users/georgeoneill/ess-dmsc/aoc2025/day6/input'
               ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
@@ -22,7 +22,7 @@
             01 len PIC 9(4) VALUE 0.
             01 maxn PIC 9(4) VALUE 0.
             01 minn PIC 9(4) VALUE 0.
-            01 nlines PIC 9(1) VALUE 4.
+            01 nlines PIC 9(1) VALUE 5.
             01 numitems PIC 9(4) VALUE 0.
             01 posi PIC 9(5) VALUE 0.
             01 ptr PIC 9(5) VALUE 1.
@@ -75,7 +75,8 @@
             COMPUTE minn = FUNCTION MIN(
              ptritem(1, idx),
              ptritem(2, idx),
-             ptritem(3, idx)
+             ptritem(3, idx),
+             ptritem(4, idx)
             )
             PERFORM VARYING posi FROM 0 BY 1
              UNTIL posi > ptritem(4, idx + 1) - 1 - minn
