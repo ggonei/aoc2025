@@ -82,18 +82,21 @@
              MOVE 0 TO leadzs
              INSPECT repval TALLYING leadzs FOR LEADING ZEROES
              MOVE repval(leadzs + 1:) TO strcat
-             PERFORM VARYING repeat FROM 2 BY 1 UNTIL repeat > divider
-              STRING strcat DELIMITED BY SPACE
-                     repval(leadzs + 1:) DELIMITED BY SPACE
-               INTO strcat
-              END-STRING
-              MOVE FUNCTION NUMVAL(strcat) TO echoed
-              IF min <= echoed AND echoed <= max THEN
-               DISPLAY strcat " (" repval(leadzs + 1:) ")"
-               PERFORM Adddata
-               EXIT PERFORM
-              END-IF
-             END-PERFORM
+           IF
+             FUNCTION MOD(divider, (LENGTH OF repval) - leadzs) <= 1
+            THEN
+              PERFORM VARYING repeat FROM 2 BY 1 UNTIL repeat > divider
+               STRING strcat DELIMITED BY SPACE
+                      repval(leadzs + 1:) DELIMITED BY SPACE
+                INTO strcat
+               END-STRING
+               MOVE FUNCTION NUMVAL(strcat) TO echoed
+               IF min <= echoed AND echoed <= max THEN
+                PERFORM Adddata
+                EXIT PERFORM
+               END-IF
+              END-PERFORM
+            END-IF
             END-PERFORM.
 
            Adddata.
