@@ -27,6 +27,7 @@
             01 diffpos PIC 9(10) VALUE 0.
             01 diffpos2 PIC 9(10) VALUE 0.
             01 counter PIC 9(10) VALUE 0.
+            01 strcat PIC X(20) VALUE SPACES.
 
        PROCEDURE DIVISION.
            MOVE 1 TO idx.
@@ -60,12 +61,23 @@
              PERFORM VARYING endpos FROM 1 BY 1 UNTIL endpos > newidx
               MOVE 0 TO diffpos
               MOVE 0 TO diffpos2
-              DISPLAY startpos " " endpos
               INSPECT endpos TALLYING diffpos FOR LEADING ZEROES
               INSPECT startpos TALLYING diffpos2
                FOR ALL endpos(diffpos + 1:)
               IF diffpos2 > 1 THEN
-               COMPUTE counter = counter + diffpos2 - 1
+               MOVE SPACES TO strcat
+               PERFORM UNTIL diffpos2 < 1
+                STRING strcat DELIMITED BY SPACE
+                       endpos(diffpos + 1:) DELIMITED BY SPACE
+                 INTO strcat
+                END-STRING
+                SUBTRACT 1 FROM diffpos2
+               END-PERFORM
+               DISPLAY strcat
+               DISPLAY startpos
+               IF FUNCTION NUMVAL(strcat) = FUNCTION NUMVAL(startpos)
+               THEN
+                DISPLAY "X"
               END-IF
              END-PERFORM
             END-PERFORM
