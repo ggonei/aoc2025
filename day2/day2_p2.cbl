@@ -34,6 +34,7 @@
             01 repeats PIC 9(2) VALUE 0.
             01 counter PIC 9(18) VALUE 0.
             01 strcat PIC X(20) VALUE SPACES.
+            01 repeatcheck PIC 9(1) VALUE 0.
 
        PROCEDURE DIVISION.
            MOVE 1 TO idx.
@@ -61,6 +62,14 @@
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
             UNSTRING myitem(idx) DELIMITED BY "-" INTO min,max
             DISPLAY min "->" max
+            PERFORM Loop
+           END-PERFORM.
+
+           DISPLAY counter.
+           CLOSE inputfile.
+           STOP RUN.
+
+           Loop.
             COMPUTE divider = 10 **
              (
               FUNCTION INTEGER(FUNCTION LOG10(max)) -
@@ -68,36 +77,39 @@
                (FUNCTION INTEGER(FUNCTION LOG10(max)))
               / 2)
              )
-            COMPUTE checkmin = min / divider
-            IF checkmin = 0 THEN MOVE 1 TO checkmin END-IF
             MOVE 1 TO checkmin
             COMPUTE checkmax = max / divider
             DISPLAY checkmin "->" checkmax
             PERFORM VARYING iterval FROM min BY 1 UNTIL iterval > max
              PERFORM VARYING echoed FROM checkmin BY 1
              UNTIL echoed > checkmax
-              MOVE 0 TO leadzs
-              MOVE 0 TO repeats
-              INSPECT echoed TALLYING leadzs FOR LEADING ZEROES
-              INSPECT iterval TALLYING repeats
-               FOR ALL echoed(leadzs + 1:)
-              IF repeats >= 2
-               THEN
-                MOVE SPACES TO strcat
-                STRING echoed(leadzs + 1:) DELIMITED BY SPACE
-                       echoed(leadzs + 1:) DELIMITED BY SPACE
-                 INTO strcat
-                END-STRING
-                IF FUNCTION NUMVAL(strcat) = FUNCTION NUMVAL(iterval)
-                 THEN
-                  ADD 1 TO counter
-                  DISPLAY counter
-                END-IF
+             PERFORM repeatchecker
+              IF repeatcheck = 0 THEN
+               MOVE 0 TO leadzs
+               MOVE 0 TO repeats
+               INSPECT echoed TALLYING leadzs FOR LEADING ZEROES
+               INSPECT iterval TALLYING repeats
+                FOR ALL echoed(leadzs + 1:)
+               IF repeats >= 2
+                THEN
+                 MOVE SPACES TO strcat
+                 PERFORM UNTIL repeats < 1
+                  STRING strcat DELIMITED BY SPACE
+                         echoed(leadzs + 1:) DELIMITED BY SPACE
+                   INTO strcat
+                  END-STRING
+                  SUBTRACT 1 FROM repeats
+                 END-PERFORM
+                 IF FUNCTION NUMVAL(strcat) = FUNCTION NUMVAL(iterval)
+                  THEN
+                   DISPLAY strcat ":" iterval
+                   ADD 1 TO counter
+                   DISPLAY counter
+                 END-IF
+               END-IF
               END-IF
              END-PERFORM
-            END-PERFORM
-           END-PERFORM.
+            END-PERFORM.
 
-           DISPLAY counter.
-           CLOSE inputfile.
-           STOP RUN.
+           repeatchecker.
+            MOVE 1 TO repeatcheck.
