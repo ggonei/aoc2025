@@ -23,6 +23,8 @@
             01 posi PIC 9(3).
             01 posf PIC 9(3).
             01 nstrtrunc PIC X(102).
+            01 total PIC 9(10) VALUE 0.
+            01 val PIC 9(2) VALUE 0.
 
        PROCEDURE DIVISION.
            OPEN INPUT inputfile.
@@ -45,11 +47,15 @@
                 MOVE 0 TO posi
                 MOVE nstr TO nstrtrunc
                ELSE
+                COMPUTE val = FUNCTION NUMVAL(nstr(posi:1)) * 10
+                + FUNCTION NUMVAL(nstr(posf:1))
+                COMPUTE total = total + val
                 DISPLAY "NEXT"
                END-IF
               END-PERFORM
            END-PERFORM.
            CLOSE inputfile.
+           DISPLAY total.
            STOP RUN.
 
            Findhigh.
