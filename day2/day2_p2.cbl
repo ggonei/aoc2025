@@ -83,7 +83,7 @@
              INSPECT repval TALLYING leadzs FOR LEADING ZEROES
              MOVE repval(leadzs + 1:) TO strcat
            IF
-             FUNCTION MOD(divider, (LENGTH OF repval) - leadzs) <= 1
+             FUNCTION MOD(divider, LENGTH OF repval - leadzs) <= 1
             THEN
               PERFORM VARYING repeat FROM 2 BY 1 UNTIL repeat > divider
                STRING strcat DELIMITED BY SPACE

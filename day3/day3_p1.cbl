@@ -23,6 +23,7 @@
             01 posi PIC 9(3).
             01 posf PIC 9(3).
             01 nstrtrunc PIC X(102).
+            01 nstrtrunctmp PIC X(102).
             01 total PIC 9(10) VALUE 0.
             01 val PIC 9(2) VALUE 0.
 
@@ -65,7 +66,8 @@
                IF posi = 0
                 MOVE idx TO posi
                 MOVE nstrtrunc(idx + 1:LENGTH OF nstrtrunc - posi + 1)
-                 TO nstrtrunc
+                 TO nstrtrunctmp
+                MOVE nstrtrunctmp TO nstrtrunc
                 MOVE nmax TO highestn
                 MOVE highestn TO highn
                 PERFORM Findhigh
