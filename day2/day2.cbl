@@ -54,7 +54,6 @@
 
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
             UNSTRING myitem(idx) DELIMITED BY "-" INTO min,max
-            DISPLAY min " " max
             PERFORM VARYING startpos FROM min BY 1 UNTIL startpos > max
              COMPUTE newidx = 10 ** FUNCTION
                               INTEGER((FUNCTION LOG10(max) + 1) / 2) - 1
@@ -66,18 +65,14 @@
                FOR ALL endpos(diffpos + 1:)
               IF diffpos2 > 1 THEN
                MOVE SPACES TO strcat
-               PERFORM UNTIL diffpos2 < 1
-                STRING strcat DELIMITED BY SPACE
-                       endpos(diffpos + 1:) DELIMITED BY SPACE
-                 INTO strcat
-                END-STRING
-                SUBTRACT 1 FROM diffpos2
-               END-PERFORM
-               DISPLAY strcat
-               DISPLAY startpos
+               STRING endpos(diffpos + 1:) DELIMITED BY SPACE
+                      endpos(diffpos + 1:) DELIMITED BY SPACE
+                INTO strcat
+               END-STRING
                IF FUNCTION NUMVAL(strcat) = FUNCTION NUMVAL(startpos)
-               THEN
-                DISPLAY "X"
+                THEN
+                 ADD 1 TO counter
+               END-IF
               END-IF
              END-PERFORM
             END-PERFORM
