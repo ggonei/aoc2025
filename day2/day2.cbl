@@ -15,17 +15,22 @@
 
            WORKING-STORAGE SECTION.
             01 eof PIC 9(1) VALUE 0.
-            01 newidx PIC 9(10) VALUE 0.
-            01 min PIC 9(10) VALUE 0.
-            01 max PIC 9(10) VALUE 0.
             01 myarray.
              02 myitem OCCURS 100 TIMES INDEXED BY idx.
               03 itm PIC X(50).
-            01 numitems PIC 9(10) VALUE 0.
-            01 startpos PIC 9(10) VALUE 1.
-            01 endpos PIC 9(10) VALUE 0.
-            01 diffpos PIC 9(10) VALUE 0.
-            01 diffpos2 PIC 9(10) VALUE 0.
+            01 startpos PIC 9(4) VALUE 1.
+            01 endpos PIC 9(4) VALUE 1.
+            01 diffpos PIC 9(4) VALUE 0.
+            01 newidx PIC 9(4) VALUE 1.
+            01 numitems PIC 9(4) VALUE 0.
+            01 min PIC 9(10) VALUE 0.
+            01 max PIC 9(10) VALUE 0.
+            01 echoed PIC 9(10) VALUE 0.
+            01 iterval PIC 9(10) VALUE 0.
+            01 checkmin PIC 9(5) VALUE 0.
+            01 checkmax PIC 9(5) VALUE 0.
+            01 leadzs PIC 9(2) VALUE 0.
+            01 repeats PIC 9(2) VALUE 0.
             01 counter PIC 9(10) VALUE 0.
             01 strcat PIC X(20) VALUE SPACES.
 
@@ -55,26 +60,30 @@
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
             UNSTRING myitem(idx) DELIMITED BY "-" INTO min,max
             DISPLAY min "->" max
-            COMPUTE newidx = 10 ** FUNCTION
+            COMPUTE checkmin = 10 ** FUNCTION
+                             INTEGER((FUNCTION LOG10(min)) / 2)
+            COMPUTE checkmax = 10 ** FUNCTION
                              INTEGER((FUNCTION LOG10(max) + 1) / 2) - 1
-            PERFORM VARYING startpos FROM min BY 1 UNTIL startpos > max
-             PERFORM VARYING endpos FROM 1 BY 1 UNTIL endpos > newidx
-              MOVE 0 TO diffpos
-              MOVE 0 TO diffpos2
-              INSPECT endpos TALLYING diffpos FOR LEADING ZEROES
-              INSPECT startpos TALLYING diffpos2
-               FOR ALL endpos(diffpos + 1:)
-              IF diffpos2 = 2 AND
-               FUNCTION LOG10(newidx) < LENGTH OF endpos(diffpos + 1:)
+            DISPLAY checkmin "->" checkmax
+            PERFORM VARYING iterval FROM min BY 1 UNTIL iterval > max
+             PERFORM VARYING echoed FROM checkmin BY 1
+             UNTIL echoed > checkmax
+              MOVE 0 TO leadzs
+              MOVE 0 TO repeats
+              INSPECT echoed TALLYING leadzs FOR LEADING ZEROES
+              INSPECT iterval TALLYING repeats
+               FOR ALL echoed(leadzs + 1:)
+              IF repeats = 2 AND
+               FUNCTION LOG10(checkmax) < LENGTH OF endpos(leadzs + 1:)
               THEN
                MOVE SPACES TO strcat
-               STRING endpos(diffpos + 1:) DELIMITED BY SPACE
-                      endpos(diffpos + 1:) DELIMITED BY SPACE
+               STRING echoed(leadzs + 1:) DELIMITED BY SPACE
+                      echoed(leadzs + 1:) DELIMITED BY SPACE
                 INTO strcat
                END-STRING
-               IF FUNCTION NUMVAL(strcat) = FUNCTION NUMVAL(startpos)
+               IF FUNCTION NUMVAL(strcat) = FUNCTION NUMVAL(iterval)
                 THEN
-                 ADD startpos TO counter
+                 ADD iterval TO counter
                END-IF
               END-IF
              END-PERFORM
