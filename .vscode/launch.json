@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run COBOL Program",
+      "type": "cppdbg",
+      "request": "launch",
+      "preLaunchTask": "Build",
+      "postDebugTask": "Run",
+      "program": "${workspaceFolder}/${fileBasenameNoExtension}",
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "externalConsole": false
+    }
+  ]
+}
