@@ -17,9 +17,10 @@
 
            WORKING-STORAGE SECTION.
             01 eof PIC 9(1) VALUE 0.
-            01 posi PIC s9(9) VALUE 50.
+            01 clicks PIC s9(9) VALUE 0.
             01 counter PIC 9(5) VALUE 0.
             01 magnitude PIC 9(4) VALUE 0.
+            01 posi PIC s9(9) VALUE 50.
             01 rotation PIC s9(1) VALUE 0.
 
        PROCEDURE DIVISION.
@@ -38,7 +39,7 @@
               END-IF
               MOVE rawmagnitude TO magnitude
               COMPUTE posi = posi + (rotation * magnitude)
-              COMPUTE posi = FUNCTION MOD(posi, 100)
+              DIVIDE 100 INTO posi GIVING clicks REMAINDER posi
               IF posi = 0 THEN
                COMPUTE counter = counter + 1
               END-IF
