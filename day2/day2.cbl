@@ -5,7 +5,7 @@
            INPUT-OUTPUT SECTION.
             FILE-CONTROL.
              SELECT inputfile ASSIGN TO '/'-
-             'Users/georgeoneill/ess-dmsc/aoc2025/day2/inputtst'
+             'Users/georgeoneill/ess-dmsc/aoc2025/day2/input'
               ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
@@ -85,7 +85,6 @@
               INSPECT echoed TALLYING leadzs FOR LEADING ZEROES
               INSPECT iterval TALLYING repeats
                FOR ALL echoed(leadzs + 1:)
-              DISPLAY iterval ":" echoed
               IF repeats = 2 AND
                FUNCTION LOG10(checkmax) < LENGTH OF endpos(leadzs + 1:)
               THEN
