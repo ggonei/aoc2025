@@ -16,10 +16,13 @@
 
            WORKING-STORAGE SECTION.
             01 eof PIC 9(1) VALUE 0.
-            01 pos PIC 9(3) VALUE 1.
-            01 highn PIC 9(1).
+            01 highn PIC s9(1).
+            01 highestn PIC s9(1) VALUE 9.
+            01 nmax PIC s9(1) VALUE 9.
             01 idx PIC 9(3).
             01 posi PIC 9(3).
+            01 posf PIC 9(3).
+            01 nstrtrunc PIC X(102).
 
        PROCEDURE DIVISION.
            OPEN INPUT inputfile.
@@ -28,15 +31,43 @@
              AT END
               MOVE 1 TO eof
              NOT AT END
-      *        PERFORM VARYING highn FROM 9 BY -1 UNTIL highn < 0
-              PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > LENGTH OF nstr
-               IF nstr(idx:1) = "9"
-                MOVE idx TO posi
-                EXIT PERFORM
+              DISPLAY nstr
+              MOVE nstr TO nstrtrunc
+              MOVE 0 TO posi
+              MOVE 0 TO posf
+              MOVE nmax TO highestn
+              PERFORM UNTIL posi NOT= 0 AND posf NOT= 0
+               PERFORM VARYING highn FROM highestn BY -1 UNTIL highn < 0
+                PERFORM Findhigh
+               END-PERFORM
+               IF posf = 0 THEN
+                COMPUTE highestn = FUNCTION NUMVAL(nstr(posi:1)) - 1
+                MOVE 0 TO posi
+                MOVE nstr TO nstrtrunc
+               ELSE
+                DISPLAY "NEXT"
                END-IF
               END-PERFORM
-              DISPLAY nstr(1:posi)
-      *        END-PERFORM
            END-PERFORM.
            CLOSE inputfile.
            STOP RUN.
+
+           Findhigh.
+            PERFORM VARYING idx FROM 1 BY 1
+             UNTIL idx > LENGTH OF nstrtrunc - 1
+              IF nstrtrunc(idx:1) = highn
+               IF posi = 0
+                MOVE idx TO posi
+                MOVE nstrtrunc(idx + 1:LENGTH OF nstrtrunc - posi + 1)
+                 TO nstrtrunc
+              MOVE nmax TO highestn
+                MOVE highestn TO highn
+                PERFORM Findhigh
+               ELSE
+                IF posf = 0
+                 COMPUTE posf = posi + idx
+                 DISPLAY nstr(posi:1) nstr(posf:1)
+                END-IF
+               END-IF
+              END-IF
+            END-PERFORM.
