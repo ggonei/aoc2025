@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. day1.
+       PROGRAM-ID. day1-p1.
 
        ENVIRONMENT DIVISION.
            INPUT-OUTPUT SECTION.
