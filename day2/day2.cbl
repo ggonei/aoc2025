@@ -21,10 +21,13 @@
             01 myarray.
              02 myitem OCCURS 100 TIMES INDEXED BY idx.
               03 itm PIC X(50).
-            01 numitems            PIC 9(10) VALUE 0.
-            01 startpos             PIC 9(10) VALUE 1.
-            01 endpos               PIC 9(10) VALUE 0.
-            01 diffpos               PIC 9(10) VALUE 0.
+            01 numitems PIC 9(10) VALUE 0.
+            01 startpos PIC 9(10) VALUE 1.
+            01 endpos PIC 9(10) VALUE 0.
+            01 endpos-z PIC Z(10).
+            01 endpos-s PIC X(1).
+            01 diffpos PIC 9(10) VALUE 0.
+            01 counter PIC 9(10) VALUE 0.
 
        PROCEDURE DIVISION.
            MOVE 1 TO idx.
@@ -53,13 +56,22 @@
             UNSTRING myitem(idx) DELIMITED BY "-" INTO min,max
             DISPLAY min " " max
             PERFORM VARYING startpos FROM min BY 1 UNTIL startpos > max
-             COMPUTE newidx = (FUNCTION LOG10(max) + 1) / 2
-             DISPLAY newidx
-      *     PERFORM VARYING endpos FROM 1 UNTIL endpos > newidx
-      *       DISPLAY endpos
-      *      END-PERFORM
+             COMPUTE newidx = 10 ** FUNCTION
+                              INTEGER((FUNCTION LOG10(max) + 1) / 2) - 1
+             PERFORM VARYING endpos FROM 1 BY 1 UNTIL endpos > newidx
+              MOVE 0 TO diffpos
+              MOVE endpos TO endpos-z
+              INSPECT endpos-z TALLYING diffpos FOR LEADING SPACES
+              MOVE endpos(diffpos + 1:) TO endpos-s
+              MOVE 0 TO diffpos
+              INSPECT startpos TALLYING diffpos FOR ALL endpos-s
+              IF diffpos > 1 THEN
+               COMPUTE counter = counter + diffpos - 1
+              END-IF
+             END-PERFORM
             END-PERFORM
            END-PERFORM.
 
+           DISPLAY counter.
            CLOSE inputfile.
            STOP RUN.
