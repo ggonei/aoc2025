@@ -5,7 +5,7 @@
            INPUT-OUTPUT SECTION.
             FILE-CONTROL.
              SELECT inputfile ASSIGN TO '/'-
-           'Users/georgeoneill/ess-dmsc/aoc2025/day3/inputtst'
+           'Users/georgeoneill/ess-dmsc/aoc2025/day3/input'
               ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
@@ -58,6 +58,7 @@
               DISPLAY posx
               COMPUTE val = FUNCTION NUMVAL(posx)
               COMPUTE total = total + val
+              DISPLAY total
               END-IF
            END-PERFORM.
            CLOSE inputfile.
@@ -71,21 +72,27 @@
              )) + 1
             PERFORM VARYING idx FROM 1 BY 1
              UNTIL idx > LENGTH OF nstrtrunc - nbatts
-      *      DISPLAY posx
-      *      DISPLAY highn ":" nstrtrunc "," idx "(" posidx ")"
+      *    DISPLAY posx
+      *    DISPLAY highn ":" nstrtrunc "," idx "(" posidx ")"
               IF nstrtrunc(idx:1) = highn THEN
-      *      DISPLAY "1:" nstrtrunc(idx:)
+      *    DISPLAY nstrtrunc(idx:)
                IF posv(posidx) = 0 OR posidx = nbatts + 1 THEN
-      *      DISPLAY "2:"
                 IF (lengthc - idx) >= (nbatts - posidx) THEN
-      *      DISPLAY "3:" idx
+      *    DISPLAY divider
                  SUBTRACT idx FROM lengthc
                  IF posidx = nbatts + 1 THEN
                   COMPUTE posidx = nbatts - idx + divider
+                  IF posidx > nbatts + 1 THEN
+                   COMPUTE posidx = nbatts + 1
+                  END-IF
                  END-IF
-                 COMPUTE posv(posidx) = FUNCTION NUMVAL(
-                  nstrtrunc(idx:1)
-                 )
+                 IF posv(posidx) < FUNCTION NUMVAL(
+                   nstrtrunc(idx:1)
+                  ) THEN
+                  COMPUTE posv(posidx) = FUNCTION NUMVAL(
+                   nstrtrunc(idx:1)
+                  )
+                 END-IF
                  MOVE nmax TO highestn
                  MOVE highestn TO highn
                  ADD 1 to posidx
@@ -94,22 +101,19 @@
                  PERFORM Findhigh
                 ELSE
                  IF divider < nbatts THEN
-                  COMPUTE curidx = posidx
                   COMPUTE extrad = divider - (nbatts - posidx + 1)
                   PERFORM UNTIL extrad < 1
-                   PERFORM VARYING posidx FROM 1 BY 1
-                   UNTIL posidx > divider
-                    IF nstrtrunc(posidx + 1:1) > nstrtrunc(posidx:1)
+                   PERFORM VARYING curidx FROM 1 BY 1
+                   UNTIL curidx >= divider
+                    IF nstrtrunc(curidx + 1:1) > nstrtrunc(curidx:1)
                     THEN
-                     MOVE nstrtrunc(posidx:1) TO remchar
-                     MOVE nstrtrunc(posidx + 1:1) TO nstrtrunc(posidx:1)
-                     MOVE remchar TO nstrtrunc(posidx + 1:1)
+                     MOVE nstrtrunc(curidx + 1:) TO nstrtrunc(curidx:)
+                     SUBTRACT 1 FROM extrad
+                     EXIT PERFORM
                     END-IF
                    END-PERFORM
-                   DISPLAY posx ":" nstrtrunc
-                   SUBTRACT 1 FROM extrad
                   END-PERFORM
-                  DISPLAY posx ":" nstrtrunc
+                  COMPUTE curidx = posidx
                   PERFORM VARYING posidx FROM curidx BY 1
                    UNTIL posidx > nbatts
                    IF posv(posidx) = 0 THEN
