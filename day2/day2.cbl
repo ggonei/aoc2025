@@ -5,7 +5,7 @@
            INPUT-OUTPUT SECTION.
             FILE-CONTROL.
              SELECT inputfile ASSIGN TO '/'-
-             'Users/georgeoneill/ess-dmsc/aoc2025/day2/input'
+             'Users/georgeoneill/ess-dmsc/aoc2025/day2/inputtst'
               ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
@@ -27,9 +27,9 @@
             01 diffpos               PIC 9(10) VALUE 0.
 
        PROCEDURE DIVISION.
-           MOVE 1 TO idx
-           OPEN INPUT inputfile
-           READ inputfile INTO instruction
+           MOVE 1 TO idx.
+           OPEN INPUT inputfile.
+           READ inputfile INTO instruction.
 
            PERFORM UNTIL startpos > LENGTH OF instruction
 
@@ -46,14 +46,18 @@
 
            END-PERFORM.
 
-           COMPUTE newidx = idx - 1
-           MOVE newidx TO numitems
+           COMPUTE newidx = idx - 1.
+           MOVE newidx TO numitems.
 
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
             UNSTRING myitem(idx) DELIMITED BY "-" INTO min,max
             DISPLAY min " " max
             PERFORM VARYING startpos FROM min BY 1 UNTIL startpos > max
-             DISPLAY startpos
+             COMPUTE newidx = (FUNCTION LOG10(max) + 1) / 2
+             DISPLAY newidx
+      *     PERFORM VARYING endpos FROM 1 UNTIL endpos > newidx
+      *       DISPLAY endpos
+      *      END-PERFORM
             END-PERFORM
            END-PERFORM.
 
