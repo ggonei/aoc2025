@@ -24,9 +24,8 @@
             01 numitems PIC 9(10) VALUE 0.
             01 startpos PIC 9(10) VALUE 1.
             01 endpos PIC 9(10) VALUE 0.
-            01 endpos-z PIC Z(10).
-            01 endpos-s PIC X(1).
             01 diffpos PIC 9(10) VALUE 0.
+            01 diffpos2 PIC 9(10) VALUE 0.
             01 counter PIC 9(10) VALUE 0.
 
        PROCEDURE DIVISION.
@@ -60,13 +59,13 @@
                               INTEGER((FUNCTION LOG10(max) + 1) / 2) - 1
              PERFORM VARYING endpos FROM 1 BY 1 UNTIL endpos > newidx
               MOVE 0 TO diffpos
-              MOVE endpos TO endpos-z
-              INSPECT endpos-z TALLYING diffpos FOR LEADING SPACES
-              MOVE endpos(diffpos + 1:) TO endpos-s
-              MOVE 0 TO diffpos
-              INSPECT startpos TALLYING diffpos FOR ALL endpos-s
-              IF diffpos > 1 THEN
-               COMPUTE counter = counter + diffpos - 1
+              MOVE 0 TO diffpos2
+              DISPLAY startpos " " endpos
+              INSPECT endpos TALLYING diffpos FOR LEADING ZEROES
+              INSPECT startpos TALLYING diffpos2
+               FOR ALL endpos(diffpos + 1:)
+              IF diffpos2 > 1 THEN
+               COMPUTE counter = counter + diffpos2 - 1
               END-IF
              END-PERFORM
             END-PERFORM
