@@ -35,24 +35,22 @@
               MOVE 0 TO eoline
               MOVE 1 TO ptr
               MOVE 1 TO idx
-      *       DISPLAY instruction
               PERFORM UNTIL eoline > 1
                UNSTRING instruction DELIMITED BY ALL SPACES INTO
                tmp WITH POINTER ptr
                IF tmp = SPACES THEN
                 ADD 1 TO eoline
                ELSE
-                ADD 1 TO idx
                 MOVE tmp TO item(linen, idx)
                 MOVE SPACES to tmp
                 MOVE 0 TO eoline
+                ADD 1 TO idx
                 MOVE idx TO numitems
                END-IF
               END-PERFORM
               ADD 1 TO linen
               IF linen = 6 THEN ADD 1 TO eofile END-IF
            END-PERFORM.
-           MOVE 1 TO idx
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
             DISPLAY
              item(1, idx)
@@ -75,7 +73,7 @@
               FUNCTION NUMVAL(item(2, idx)) +
               FUNCTION NUMVAL(item(3, idx)) +
               FUNCTION NUMVAL(item(4, idx))
-             ELSE DISPLAY idx "WTF"
+             ELSE DISPLAY "UNKNOWN SYMBOL AT POSITION " idx
              END-IF
             END-IF
            DISPLAY ans
