@@ -28,7 +28,6 @@
              AT END
               MOVE 1 TO eof
              NOT AT END
-              DISPLAY counter
               IF direction = "R" THEN
                MOVE 1 TO rotation
               ELSE
@@ -38,8 +37,7 @@
               END-IF
               MOVE rawmagnitude TO magnitude
               COMPUTE counter = counter + (rotation * magnitude)
-              DISPLAY magnitude
+              IF counter = 0 THEN DISPLAY counter
            END-PERFORM.
-           DISPLAY counter.
            CLOSE inputfile.
            STOP RUN.
