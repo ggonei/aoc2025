@@ -60,10 +60,22 @@
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
             UNSTRING myitem(idx) DELIMITED BY "-" INTO min,max
             DISPLAY min "->" max
-            COMPUTE checkmin = 10 ** FUNCTION
-                             INTEGER((FUNCTION LOG10(min)) / 2)
-            COMPUTE checkmax = 10 ** FUNCTION
-                             INTEGER((FUNCTION LOG10(max) + 1) / 2) - 1
+            COMPUTE checkmin = min / ( 10 **
+             (
+              FUNCTION INTEGER(FUNCTION LOG10(min)) + 1 -
+              FUNCTION INTEGER(
+               (FUNCTION INTEGER(FUNCTION LOG10(min)) + 1)
+              / 2)
+             )
+            )
+            COMPUTE checkmax = max / ( 10 **
+             (
+              FUNCTION INTEGER(FUNCTION LOG10(max)) -
+              FUNCTION INTEGER(
+               (FUNCTION INTEGER(FUNCTION LOG10(max)))
+              / 2)
+             )
+            )
             DISPLAY checkmin "->" checkmax
             PERFORM VARYING iterval FROM min BY 1 UNTIL iterval > max
              PERFORM VARYING echoed FROM checkmin BY 1
@@ -73,6 +85,7 @@
               INSPECT echoed TALLYING leadzs FOR LEADING ZEROES
               INSPECT iterval TALLYING repeats
                FOR ALL echoed(leadzs + 1:)
+              DISPLAY iterval ":" echoed
               IF repeats = 2 AND
                FUNCTION LOG10(checkmax) < LENGTH OF endpos(leadzs + 1:)
               THEN
