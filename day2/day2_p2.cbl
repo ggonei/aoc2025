@@ -1,11 +1,11 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. day2.
+       PROGRAM-ID. day2-p2.
 
        ENVIRONMENT DIVISION.
            INPUT-OUTPUT SECTION.
             FILE-CONTROL.
              SELECT inputfile ASSIGN TO '/'-
-             'Users/georgeoneill/ess-dmsc/aoc2025/day2/input'
+             'Users/georgeoneill/ess-dmsc/aoc2025/day2/inputtst'
               ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
@@ -70,6 +70,7 @@
              )
             COMPUTE checkmin = min / divider
             IF checkmin = 0 THEN MOVE 1 TO checkmin END-IF
+            MOVE 1 TO checkmin
             COMPUTE checkmax = max / divider
             DISPLAY checkmin "->" checkmax
             PERFORM VARYING iterval FROM min BY 1 UNTIL iterval > max
@@ -80,7 +81,7 @@
               INSPECT echoed TALLYING leadzs FOR LEADING ZEROES
               INSPECT iterval TALLYING repeats
                FOR ALL echoed(leadzs + 1:)
-              IF repeats = 2
+              IF repeats >= 2
                THEN
                 MOVE SPACES TO strcat
                 STRING echoed(leadzs + 1:) DELIMITED BY SPACE
@@ -89,7 +90,8 @@
                 END-STRING
                 IF FUNCTION NUMVAL(strcat) = FUNCTION NUMVAL(iterval)
                  THEN
-                  ADD iterval TO counter
+                  ADD 1 TO counter
+                  DISPLAY counter
                 END-IF
               END-IF
              END-PERFORM
