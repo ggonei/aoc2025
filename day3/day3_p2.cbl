@@ -33,6 +33,7 @@
             01 lengthc PIC 9(3) VALUE 100.
             01 curidx PIC 9(3) VALUE 100.
             01 divider PIC 9(2) VALUE 1.
+            01 extrad PIC 9(3) VALUE 0.
 
        PROCEDURE DIVISION.
            MOVE 1 TO posidx
@@ -69,9 +70,14 @@
              )) + 1
             PERFORM VARYING idx FROM 1 BY 1
              UNTIL idx > LENGTH OF nstrtrunc - nbatts
+      *      DISPLAY posx
+      *      DISPLAY highn ":" nstrtrunc "," idx "(" posidx ")"
               IF nstrtrunc(idx:1) = highn THEN
+      *      DISPLAY "1:" nstrtrunc(idx:)
                IF posv(posidx) = 0 OR posidx = nbatts + 1 THEN
+      *      DISPLAY "2:"
                 IF (lengthc - idx) >= (nbatts - posidx) THEN
+      *      DISPLAY "3:" idx
                  SUBTRACT idx FROM lengthc
                  IF posidx = nbatts + 1 THEN
                   COMPUTE posidx = nbatts - idx + divider
@@ -87,12 +93,24 @@
                  PERFORM Findhigh
                 ELSE
                  IF divider < nbatts THEN
-                  MOVE nstrtrunc(1:divider) TO nstrtrunc
                   COMPUTE curidx = posidx
+                  COMPUTE extrad = divider - (nbatts - posidx + 1)
+                  PERFORM UNTIL extrad < 1
+                   PERFORM VARYING posidx FROM 1 BY 1
+                   UNTIL posidx > divider
+                    IF nstrtrunc(posidx + 1:1) > nstrtrunc(posidx:1)
+                    THEN
+                     MOVE nstrtrunc(posidx + 1:1) TO nstrtrunc(posidx:1)
+                    END-IF
+                   END-PERFORM
+                   SUBTRACT 1 FROM extrad
+                  END-PERFORM
                   PERFORM VARYING posidx FROM curidx BY 1
                    UNTIL posidx > nbatts
-                   MOVE nstrtrunc(posidx - curidx + 1:1)
-                    TO posv(posidx)
+                   IF posv(posidx) = 0 THEN
+                    MOVE nstrtrunc(posidx - curidx + 1:1)
+                     TO posv(posidx)
+                   END-IF
                   END-PERFORM
                  END-IF
                 END-IF
