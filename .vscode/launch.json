@@ -7,7 +7,7 @@
       "request": "launch",
       "preLaunchTask": "Build",
       "postDebugTask": "Run",
-      "program": "${workspaceFolder}/${fileBasenameNoExtension}",
+      "program": "${workspaceFolder}/${relativeFileDirname}/${fileBasenameNoExtension}",
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "externalConsole": false

@@ -6,6 +6,8 @@
       "type": "shell",
       "command": "cobc",
       "args": [
+        "-o",
+        "${workspaceFolder}/${relativeFileDirname}/${fileBasenameNoExtension}",
         "-x",
         "${file}"
       ],
@@ -17,7 +19,7 @@
     {
       "label": "Run",
       "type": "shell",
-      "command": "${workspaceFolder}/${fileBasenameNoExtension}",
+      "command": "${workspaceFolder}/${relativeFileDirname}/${fileBasenameNoExtension}",
       "group": "build",
       "dependsOn": "Build"
     }
