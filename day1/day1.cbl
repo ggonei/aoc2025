@@ -17,6 +17,8 @@
 
            WORKING-STORAGE SECTION.
             01 eof PIC 9(1) VALUE 0.
+            01 counter PIC S9(9) VALUE 50.
+            01 rotation PIC S9(1) VALUE 0.
 
        PROCEDURE DIVISION.
            OPEN INPUT inputfile
@@ -25,14 +27,17 @@
              AT END
               MOVE 1 TO eof
              NOT AT END
+              DISPLAY counter
               IF direction = "R" THEN
-               DISPLAY "R"
+               MOVE 1 TO rotation
               ELSE
                IF direction = "L" THEN
-                DISPLAY "L"
+                MOVE -1 TO rotation
                END-IF
               END-IF
-              DISPLAY magnitude
+              COMPUTE counter = counter + (magnitude * rotation)
+              DISPLAY rotation " " magnitude
            END-PERFORM.
+           DISPLAY counter.
            CLOSE inputfile.
            STOP RUN.
