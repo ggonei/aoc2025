@@ -69,7 +69,7 @@
               / 2)
              )
             COMPUTE checkmin = min / divider
-            IF checkmin = 0 THEN MOVE 1 TO checkmin
+            IF checkmin = 0 THEN MOVE 1 TO checkmin END-IF
             COMPUTE checkmax = max / divider
             DISPLAY checkmin "->" checkmax
             PERFORM VARYING iterval FROM min BY 1 UNTIL iterval > max
