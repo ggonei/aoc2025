@@ -17,8 +17,9 @@
            WORKING-STORAGE SECTION.
             01 eof PIC 9(11) VALUE 1.
             01 gridy.
-             02 strip OCCURS 10 TIMES INDEXED BY posidx.
+             02 strip OCCURS 10 TIMES INDEXED BY posix.
               03 posy PIC X(10).
+            01 posiy PIC s9(9).
             01 cnt PIC 9(2) VALUE 0.
 
        PROCEDURE DIVISION.
@@ -33,10 +34,14 @@
            END-PERFORM.
            CLOSE inputfile.
 
-           PERFORM VARYING posidx FROM 1 BY 1 UNTIL posidx > 10
-            INSPECT posy(posidx) TALLYING cnt FOR ALL "@"
-            DISPLAY cnt
+           PERFORM VARYING posix FROM 1 BY 1 UNTIL posix > 10
+            PERFORM VARYING posiy FROM 1 BY 1 UNTIL posiy > 10
+             IF (posix = 1 OR posix = 10) AND (posiy = 1 OR posiy = 10)
+             THEN
+              IF posy(posix)(posiy:1) = "@" THEN DISPLAY "@" END-IF
+             END-IF
+             DISPLAY posix "," posiy
+            END-PERFORM
            END-PERFORM.
 
-           DISPLAY gridy.
            STOP RUN.
