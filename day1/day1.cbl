@@ -35,8 +35,8 @@
                 MOVE -1 TO rotation
                END-IF
               END-IF
-              COMPUTE counter = counter + (magnitude * rotation)
-              DISPLAY rotation " " magnitude
+              COMPUTE counter = counter + magnitude
+              DISPLAY magnitude
            END-PERFORM.
            DISPLAY counter.
            CLOSE inputfile.
