@@ -25,6 +25,11 @@
             01 rotation PIC s9(1) VALUE 0.
 
        PROCEDURE DIVISION.
+      *Day 1 summary:
+      *Not being able to just DISPLAY changes the COMPUTE step isn't fun
+      *Nor is not being able to assign things using =! Only equality
+      *Reading files though is great, with FILE SECTION being clear
+
            OPEN INPUT inputfile.
            PERFORM UNTIL eof = 1
             READ inputfile

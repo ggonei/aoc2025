@@ -41,6 +41,12 @@
             01 unique PIC 9(1) VALUE 1.
 
        PROCEDURE DIVISION.
+      *Day 2 summary:
+      *This was hard.  First, reading in the string to create ranges.
+      *Using new paragraphs helped, as 'functions' but with globals
+      *Eventually used a generated table to check for inserted string
+      *which was more difficult than expected
+      *Struggled with optimisation but switching to min max check helped
            MOVE 1 TO idx.
            MOVE 1 TO tidx.
            OPEN INPUT inputfile.
@@ -69,7 +75,6 @@
             DISPLAY min "->" max
             PERFORM Loop
            END-PERFORM.
-      *     DISPLAY mytable.
 
            DISPLAY counter.
            CLOSE inputfile.

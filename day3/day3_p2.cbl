@@ -37,6 +37,11 @@
             01 remchar PIC X(1).
 
        PROCEDURE DIVISION.
+      *Day 3 summary:
+      *So many edge cases is awful
+      *And lacking a good length function
+      *Ran into some memory errors because of how I manipulated table
+      *First nested loop, which was nice to get working!
            MOVE 1 TO posidx
            OPEN INPUT inputfile.
            PERFORM UNTIL eof = 1
@@ -72,13 +77,9 @@
              )) + 1
             PERFORM VARYING idx FROM 1 BY 1
              UNTIL idx > LENGTH OF nstrtrunc - nbatts
-      *    DISPLAY posx
-      *    DISPLAY highn ":" nstrtrunc "," idx "(" posidx ")"
               IF nstrtrunc(idx:1) = highn THEN
-      *    DISPLAY nstrtrunc(idx:)
                IF posv(posidx) = 0 OR posidx = nbatts + 1 THEN
                 IF (lengthc - idx) >= (nbatts - posidx) THEN
-      *    DISPLAY divider
                  SUBTRACT idx FROM lengthc
                  IF posidx = nbatts + 1 THEN
                   COMPUTE posidx = nbatts - idx + divider

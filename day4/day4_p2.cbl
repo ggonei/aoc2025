@@ -29,6 +29,13 @@
             01 totcnt PIC 9(5) VALUE 0.
 
        PROCEDURE DIVISION.
+      *Day 4 summary:
+      *This felt very easy, could be getting the hang of it...
+      *Made a mistake of 100x100 not 140x140 which took some time
+      *No string manipulation (only character) helped this a lot
+      *I like the COBOL loop syntax
+      *Could be vastly improved but good to have an easier win...
+      *First exercise correct first time (with correct input sizes...)
            OPEN INPUT inputfile.
            PERFORM UNTIL eof > 140
             READ inputfile
@@ -116,7 +123,6 @@
                 ) THEN
                ADD 1 TO poscnt
               END-IF
-      *       DISPLAY poscnt
               IF poscnt < 4 THEN
                MOVE "/" TO posy(posix)(posiy:1)
                ADD 1 TO cnt
