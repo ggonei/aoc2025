@@ -25,7 +25,7 @@
             01 rotation PIC s9(1) VALUE 0.
 
        PROCEDURE DIVISION.
-           OPEN INPUT inputfile
+           OPEN INPUT inputfile.
            PERFORM UNTIL eof = 1
             READ inputfile
              AT END
