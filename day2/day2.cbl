@@ -71,7 +71,7 @@
                END-STRING
                IF FUNCTION NUMVAL(strcat) = FUNCTION NUMVAL(startpos)
                 THEN
-                 ADD 1 TO counter
+                 ADD startpos TO counter
                END-IF
               END-IF
              END-PERFORM
