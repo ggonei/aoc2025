@@ -11,78 +11,49 @@
        DATA DIVISION.
            FILE SECTION.
             FD inputfile.
-            01 instruction.
-             02 gridx PIC X(140).
+            01 instruction PIC X(100).
 
            WORKING-STORAGE SECTION.
-            01 eof PIC 9(11) VALUE 1.
-            01 gridy.
-             02 strip OCCURS 140 TIMES INDEXED BY posix.
-              03 posy PIC X(140).
-            01 posiy PIC s9(9).
-            01 poscnt PIC 9(1) VALUE 0.
-            01 domx PIC X(1) VALUE "Y".
-            01 dopx PIC X(1) VALUE "Y".
-            01 domy PIC X(1) VALUE "Y".
-            01 dopy PIC X(1) VALUE "Y".
-            01 cnt PIC 9(5) VALUE 0.
+            01 eof PIC 9(1) VALUE 0.
+            01 section2 PIC 9(1) VALUE 0.
+            01 min PIC 9(18) VALUE 0.
+            01 max PIC 9(18) VALUE 0.
+            01 numitems PIC 9(4) VALUE 0.
+            01 counter PIC 9(4) VALUE 0.
+            01 myarray.
+             02 myitem OCCURS 500 TIMES INDEXED BY idx.
+              03 itm PIC X(500).
 
        PROCEDURE DIVISION.
            OPEN INPUT inputfile.
-           PERFORM UNTIL eof > 140
+           MOVE 1 TO idx
+           PERFORM UNTIL eof > 0
             READ inputfile
              AT END
               ADD 1 TO eof
              NOT AT END
-              MOVE gridx TO posy(eof)
-              ADD 1 TO eof
-              DISPLAY gridx
+              IF instruction = SPACE THEN
+               ADD 1 TO section2
+               MOVE idx TO numitems
+               MOVE 1 TO idx
+              END-IF
+              IF section2 = 0 THEN
+               MOVE instruction TO myitem(idx)
+               COMPUTE idx = idx + 1
+              ELSE
+               PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
+                MOVE 0 TO min, max
+                UNSTRING myitem(idx) DELIMITED BY "-" INTO min,max
+      *         DISPLAY instruction ": " min ", " max
+                IF (min <= FUNCTION NUMVAL(instruction)
+                AND FUNCTION NUMVAL(instruction) <= max) THEN
+                 ADD 1 TO counter
+                 EXIT PERFORM
+                END-IF
+               END-PERFORM
+              END-IF
            END-PERFORM.
+           SUBTRACT 1 FROM counter.
+           DISPLAY counter.
            CLOSE inputfile.
-
-           PERFORM VARYING posix FROM 1 BY 1 UNTIL posix > 140
-            PERFORM VARYING posiy FROM 1 BY 1 UNTIL posiy > 140
-             MOVE 0 TO poscnt
-             IF posy(posix)(posiy:1) = "@" THEN
-              IF posix > 1 THEN MOVE "Y" TO domx ELSE MOVE "N" TO domx
-              END-IF
-              IF posix < 140 THEN MOVE "Y" TO dopx ELSE MOVE "N" TO dopx
-              END-IF
-              IF posiy > 1 THEN
-               IF domx = "Y" AND posy(posix - 1)(posiy - 1:1) = "@" THEN
-                ADD 1 TO poscnt
-               END-IF
-               IF posy(posix)(posiy - 1:1) = "@" THEN
-                ADD 1 TO poscnt
-               END-IF
-               IF dopx = "Y" AND posy(posix + 1)(posiy - 1:1) = "@" THEN
-                ADD 1 TO poscnt
-               END-IF
-              END-IF
-              IF posiy < 140 THEN
-               IF domx = "Y" AND posy(posix - 1)(posiy + 1:1) = "@" THEN
-                ADD 1 TO poscnt
-               END-IF
-               IF posy(posix)(posiy + 1:1) = "@" THEN
-                ADD 1 TO poscnt
-               END-IF
-               IF dopx = "Y" AND posy(posix + 1)(posiy + 1:1) = "@" THEN
-                ADD 1 TO poscnt
-               END-IF
-              END-IF
-              IF domx = "Y" AND posy(posix - 1)(posiy:1) = "@" THEN
-               ADD 1 TO poscnt
-              END-IF
-              IF dopx = "Y" AND posy(posix + 1)(posiy:1) = "@" THEN
-               ADD 1 TO poscnt
-              END-IF
-      *       DISPLAY poscnt
-              IF poscnt < 4 THEN
-               ADD 1 TO cnt
-              END-IF
-             END-IF
-            END-PERFORM
-           END-PERFORM.
-           DISPLAY cnt.
-
            STOP RUN.
