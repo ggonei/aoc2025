@@ -5,22 +5,22 @@
            INPUT-OUTPUT SECTION.
             FILE-CONTROL.
              SELECT inputfile ASSIGN TO '/'-
-           'Users/georgeoneill/ess-dmsc/aoc2025/day7/inputtst'
+           'Users/georgeoneill/ess-dmsc/aoc2025/day7/input'
               ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
            FILE SECTION.
             FD inputfile.
-            01 instruction PIC X(15).
+            01 instruction PIC X(141).
 
            WORKING-STORAGE SECTION.
             01 eofile PIC 9(1) VALUE 0.
             01 beam PIC X(1) VALUE SPACE.
             01 beamidx PIC 9(3) VALUE 1.
             01 idx PIC 9(3) VALUE 1.
-            01 maxlength PIC 9(3) VALUE 15.
-            01 previnstruc PIC X(15).
-            01 split PIC 9(3) VALUE 0.
+            01 maxlength PIC 9(3) VALUE 141.
+            01 previnstruc PIC X(141).
+            01 split PIC 9(5) VALUE 0.
 
        PROCEDURE DIVISION.
            OPEN INPUT inputfile.
