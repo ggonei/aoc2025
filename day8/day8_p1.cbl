@@ -73,6 +73,7 @@
              END-IF
             END-PERFORM
             DISPLAY idx ":" closest "; " hdsmallest
+            MOVE idx TO origpos(idx)
             MOVE hdsmallest TO distance(idx)
             MOVE closest TO neighbour(idx)
            END-PERFORM.
@@ -81,21 +82,27 @@
            SORT pidx2 ON ASCENDING KEY distance2.
            PERFORM VARYING starti FROM 1 BY 1 UNTIL starti > numitems
             MOVE starti TO idx
-            PERFORM UNTIL connected(idx)(neighbour(idx):1) = "X"
-             MOVE "X" TO connected(idx)(neighbour(idx):1)
-             MOVE "X" TO connected(neighbour(idx))(idx:1)
-             MOVE neighbour(idx) TO idx
+            PERFORM UNTIL connected2(origpos2(idx))
+             (neighbour2(origpos2(idx)):1) = "X"
+             MOVE "X" TO connected2(origpos2(idx))
+             (neighbour2(origpos2(idx)):1)
+             MOVE "X" TO connected2(neighbour2(origpos2(idx)))
+             (origpos2(idx):1)
+             MOVE neighbour2(origpos2(idx)) TO idx
             END-PERFORM
            END-PERFORM.
-           PERFORM VARYING starti FROM 1 BY 1 UNTIL starti > numitems
+           DISPLAY "HERE"
+      *    switch < to > below that was just to skip the block
+           PERFORM VARYING starti FROM 1 BY 1 UNTIL starti < numitems
             MOVE 0 TO resetter
             PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
-             IF connected(starti)(idx:1) = "X" THEN
+             IF connected2(starti)(idx:1) = "X" THEN
               PERFORM VARYING idx2 FROM 1 BY 1 UNTIL idx2 > numitems
-               IF connected(idx)(idx2:1) = "X" THEN
-                IF connected(starti)(idx2:1) NOT= "X"
+               IF connected2(idx)(idx2:1) = "X" THEN
+                IF connected2(starti)(idx2:1) NOT= "X"
                 THEN MOVE 1 TO resetter END-IF
-                MOVE connected(idx)(idx2:1) TO connected(starti)(idx2:1)
+                MOVE connected2(idx)(idx2:1)
+                TO connected2(starti)(idx2:1)
                END-IF
               END-PERFORM
              END-IF
@@ -104,8 +111,8 @@
            END-PERFORM.
            PERFORM VARYING starti FROM 1 BY 1 UNTIL starti > numitems
             MOVE 0 TO cnt
-            INSPECT connected(starti) TALLYING cnt FOR ALL "X"
-            DISPLAY starti ":" connected(starti) ", " cnt
+            INSPECT connected2(starti) TALLYING cnt FOR ALL "X"
+            DISPLAY starti ":" connected2(starti) ", " cnt
            END-PERFORM.
       *    DISPLAY closearr.
            STOP RUN.
