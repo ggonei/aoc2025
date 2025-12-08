@@ -16,14 +16,20 @@
            WORKING-STORAGE SECTION.
             01 eofile PIC 9(1) VALUE 0.
             01 beam PIC X(1) VALUE SPACE.
-            01 hstr PIC X(1) VALUE SPACE.
-            01 hval PIC 9(3) VALUE 1.
             01 idx PIC 9(3) VALUE 1.
             01 maxlength PIC 9(3) VALUE 141.
             01 previnstruc PIC X(141) VALUE SPACES.
-            01 split PIC 9(5) VALUE 0.
+            01 split PIC 9(18) VALUE 0.
+            01 myarray.
+             02 chstr PIC Z(18) VALUE 0 OCCURS 141 TIMES INDEXED BY po.
 
        PROCEDURE DIVISION.
+      *Day 7 summary:
+      *Tried hard to avoid an array here but the numbers just got big
+      *Clever use of CHAR and ORD let me represent 0-200 in 1 char space
+      *But the end result is very big!  So had to switch to array usage.
+      *In the end much nicer but without the visual result.
+      *Used integers dropping the leading zero this time to help debug.
            OPEN INPUT inputfile.
            PERFORM UNTIL eofile > 0
             READ inputfile
@@ -32,59 +38,37 @@
              NOT AT END
               IF beam NOT="S" THEN
                PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > maxlength
-               IF instruction(idx:1) = "." THEN
-                MOVE "0" TO instruction(idx:1)
-               ELSE
+                IF instruction(idx:1) = "." THEN
+                 MOVE "0" TO instruction(idx:1)
+                ELSE
                  IF instruction(idx:1) = "S" THEN
                   MOVE "S" TO beam
+                  MOVE "1" TO chstr(idx)
                  END-IF
-               END-IF
+                END-IF
                END-PERFORM
               ELSE
                PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > maxlength
                 IF instruction(idx:1) = "^" THEN
-                 IF previnstruc(idx:1) NOT= "0" THEN
-                 COMPUTE hval = FUNCTION ORD(
-                   FUNCTION NUMVAL(previnstruc(idx:1))
-                   + FUNCTION NUMVAL(instruction(idx - 1:1))
-                  )
-                  MOVE FUNCTION CHAR(hval + 48) TO hstr
-                  MOVE hstr TO instruction(idx - 1:1)
-                 COMPUTE hval = FUNCTION ORD(
-                   FUNCTION NUMVAL(previnstruc(idx:1))
-                   + FUNCTION NUMVAL(previnstruc(idx + 1:1))
-                   + FUNCTION NUMVAL(instruction(idx + 1:1))
-                  )
-                  MOVE FUNCTION CHAR(hval + 48) TO hstr
-                  MOVE hstr TO instruction(idx + 1:1)
-                 END-IF
+                 COMPUTE chstr(idx - 1) =
+                   FUNCTION NUMVAL(chstr(idx))
+                   + FUNCTION NUMVAL(chstr(idx - 1))
+                 COMPUTE chstr(idx + 1) =
+                   FUNCTION NUMVAL(chstr(idx))
+                   + FUNCTION NUMVAL(chstr(idx + 1))
+                  MOVE 0 TO chstr(idx)
                 ELSE
-                 IF previnstruc(idx:1) = "S" THEN
-                  MOVE "1" TO instruction(idx:1)
-                 ELSE
-                  IF instruction(idx:1) = "."
-                   IF previnstruc(idx:1) = "^" THEN
-                    MOVE 0 TO instruction(idx:1)
-                   ELSE
-                    MOVE previnstruc(idx:1) TO instruction(idx:1)
-                   END-IF
-                  END-IF
+                 IF instruction(idx:1) = "S" THEN
+                  MOVE "1" TO chstr(idx)
                  END-IF
                 END-IF
                END-PERFORM
               END-IF
-              MOVE instruction TO previnstruc
-              DISPLAY previnstruc
            END-PERFORM.
-           DISPLAY "Ready?"
+           CLOSE inputfile.
+           DISPLAY myarray.
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > maxlength
-            IF instruction(idx:1) NOT= "0" THEN
-             DISPLAY FUNCTION ORD(instruction(idx:1))
-             COMPUTE split = split
-              + FUNCTION ORD(instruction(idx:1))
-              - 49
-            END-IF
+            COMPUTE split = split + FUNCTION NUMVAL(chstr(idx))
            END-PERFORM.
            DISPLAY split.
-           CLOSE inputfile.
            STOP RUN.
