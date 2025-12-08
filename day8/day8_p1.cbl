@@ -24,6 +24,8 @@
             01 idx2 PIC s9(5) VALUE 0.
             01 starti PIC s9(5) VALUE 0.
             01 numitems PIC s9(5) VALUE 0.
+            01 pairs PIC s9(5) VALUE 10.
+            01 filled PIC X(30) VALUE SPACES.
             01 positions.
              02 place OCCURS 30 TIMES.
               03 posi PIC 9(5) OCCURS 3 TIMES.
@@ -32,13 +34,13 @@
               03 origpos PIC s9(5) VALUE 9999.
               03 distance PIC 9(18) VALUE 9999999999999999.
               03 neighbour PIC s9(5) VALUE 9999.
-              03 connected PIC X(30) VALUE SPACE.
+              03 connected PIC X(30) VALUE SPACES.
             01 closearr2.
              02 pidx2 OCCURS 30 TIMES.
               03 origpos2 PIC s9(5) VALUE 9999.
               03 distance2 PIC 9(18) VALUE 9999999999999999.
               03 neighbour2 PIC s9(5) VALUE 9999.
-              03 connected2 PIC X(30) VALUE SPACE.
+              03 connected2 PIC X(30) VALUE SPACES.
 
        PROCEDURE DIVISION.
       *Annoying because no comparisons between ints and signed ints
@@ -80,21 +82,49 @@
            MOVE 0 TO idx
            MOVE closearr TO closearr2.
            SORT pidx2 ON ASCENDING KEY distance2.
-           PERFORM VARYING starti FROM 1 BY 1 UNTIL starti > numitems
-            MOVE starti TO idx
-            PERFORM UNTIL connected2(origpos2(idx))
-             (neighbour2(origpos2(idx)):1) = "X"
-             MOVE "X" TO connected2(origpos2(idx))
-             (neighbour2(origpos2(idx)):1)
-             MOVE "X" TO connected2(neighbour2(origpos2(idx)))
-             (origpos2(idx):1)
-             MOVE neighbour2(origpos2(idx)) TO idx
-            END-PERFORM
-           END-PERFORM.
            DISPLAY "HERE"
+           PERFORM VARYING starti FROM 1 BY 1 UNTIL starti > pairs
+            MOVE starti TO idx
+            DISPLAY pidx2(idx)
+            IF (origpos2(starti - 1) = neighbour2(starti)
+            AND neighbour2(starti - 1) = origpos2(starti))
+            THEN ADD 1 TO pairs ELSE
+             IF (filled(origpos2(idx):1) = "X"
+             AND filled(neighbour2(idx):1) = "X")
+             THEN
+              ADD 1 TO pairs
+              DISPLAY place(origpos2(idx))
+              DISPLAY place(neighbour2(idx))
+             ELSE
+              DISPLAY "FILLEDB:" filled
+             DISPLAY place(origpos2(idx))
+             DISPLAY place(neighbour2(idx))
+      *      PERFORM UNTIL connected2(origpos2(idx))
+      *       (neighbour2(origpos2(idx)):1) = "X"
+              MOVE "X" TO connected2(origpos2(idx))
+              (neighbour2(idx):1)
+              MOVE "X" TO connected2(origpos2(idx))
+              (origpos2(idx):1)
+              DISPLAY "MOVE X TO connected(" origpos2(idx) "("
+              neighbour2(idx) ":1))"
+              MOVE "X" TO connected2(neighbour2(idx))
+              (origpos2(idx):1)
+              MOVE "X" TO connected2(neighbour2(idx))
+              (neighbour2(idx):1)
+              DISPLAY "MOVE X TO connected(" neighbour2(idx) "("
+              origpos2(idx) ":1))"
+              MOVE "X" TO filled(neighbour2(idx):1)
+              MOVE "X" TO filled(origpos2(idx):1)
+              DISPLAY "FILLEDA:" filled
+      *       MOVE neighbour2(origpos2(idx)) TO idx
+      *      END-PERFORM
+             END-IF
+            END-IF
+           END-PERFORM.
       *    switch < to > below that was just to skip the block
-           PERFORM VARYING starti FROM 1 BY 1 UNTIL starti < numitems
+           PERFORM VARYING starti FROM 1 BY 1 UNTIL starti > numitems
             MOVE 0 TO resetter
+            DISPLAY starti ": " connected2(starti)
             PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > numitems
              IF connected2(starti)(idx:1) = "X" THEN
               PERFORM VARYING idx2 FROM 1 BY 1 UNTIL idx2 > numitems
@@ -102,7 +132,7 @@
                 IF connected2(starti)(idx2:1) NOT= "X"
                 THEN MOVE 1 TO resetter END-IF
                 MOVE connected2(idx)(idx2:1)
-                TO connected2(starti)(idx2:1)
+                 TO connected2(starti)(idx2:1)
                END-IF
               END-PERFORM
              END-IF
