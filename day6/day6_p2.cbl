@@ -30,7 +30,7 @@
             01 myarray.
              02 inputs OCCURS 5 TIMES INDEXED BY linen.
               03 item PIC X(10) OCCURS 2000 TIMES INDEXED BY idx.
-           01 myptrarray.
+            01 myptrarray.
              02 ptrinputs OCCURS 5 TIMES INDEXED BY lineptr.
               03 ptritem PIC 9(5) OCCURS 2000 TIMES INDEXED BY ptridx.
 
