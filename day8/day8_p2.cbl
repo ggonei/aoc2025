@@ -40,7 +40,16 @@
               03 circuit PIC s9(7) VALUE 0.
 
        PROCEDURE DIVISION.
-      *Annoying because no comparisons between ints and signed ints
+      *Day 8 summary:
+      *Really hard and frustrating. Storing the circuit in COBOL was not
+      *trivial but I eventually managed it using a loop and differing
+      *circuits.  In the end I needed a loop over everything to get it
+      *to close successfully and provide some nice answers.
+      *The second part was super easy, and just meant removing a lot of
+      *the loops for the circuits.
+      *I also got tripped up by trying and failing to compare signed int
+      *and just time limitations (had a nice circuit implementation but
+      *it took way too long for large N).
            OPEN INPUT inputfile.
            PERFORM UNTIL eofile > 0
             READ inputfile
