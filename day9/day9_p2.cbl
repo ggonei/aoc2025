@@ -22,23 +22,45 @@
 
            WORKING-STORAGE SECTION.
              01 eofile PIC 9(1) VALUE 0.
-             01 bigside PIC 9(5) VALUE 0.
-             01 bigx PIC 9(5) VALUE 0.
-             01 bigy PIC 9(5) VALUE 0.
-             01 posbx PIC s9(5) VALUE 0.
-             01 posby PIC s9(5) VALUE 0.
-             01 posf PIC s9(5) VALUE 0.
-             01 cnt PIC 9(5) VALUE 0.
-             01 idx PIC 9(5) VALUE 0.
-             01 idx2 PIC 9(5) VALUE 0.
-             01 rectbiggest PIC 9(18) VALUE 0.
-             01 rect PIC 9(18) VALUE 0.
+             01 bigx PIC s9(6) VALUE 0.
+             01 bigy PIC s9(6) VALUE 0.
+             01 limx PIC s9(6) VALUE 0.
+             01 limy PIC s9(6) VALUE 0.
+             01 posbx PIC s9(6) VALUE 0.
+             01 posby PIC s9(6) VALUE 0.
+             01 cnt PIC s9(6) VALUE 0.
+             01 idx PIC s9(6) VALUE 0.
+             01 rect PIC s9(18) VALUE 0.
              01 positions.
                02 coord OCCURS 1000 TIMES.
-                 03 posix PIC s9(5) VALUE 0.
-                 03 posiy PIC s9(5) VALUE 0.
+                 03 posix PIC s9(6) VALUE 0.
+                 03 posiy PIC s9(6) VALUE 0.
 
        PROCEDURE DIVISION.
+      *Day 9 summary:
+      *Not that bad! Spent a lot of time on the algorithm today
+      *Anything better than yesterday...
+      *A little surprised this result worked as I expected to need to
+      *work out from 3 choices.  Algorithm reasoning:
+      *Since the line is stated to be continuous it's not got holes in.
+      *So only need to  worry about edge conditions.
+      *The differential of the curve is not 'continuous' and at any area
+      * you, and it can be seen in the data that it, can go any
+      * combination of directions.
+      *This implies there must be maximal areas that are bounded within.
+      *If you parse through the entire file on first pass you get the
+      *longest continuous edge simply by computing the difference of
+      * n, n+1
+      *since the red squares are all on the corners (none lie on lines).
+      *If this point is more than half the biggest space available
+      *(ideally the map space, so 99999x999 here, or else the biggest
+      *distances between any two points) you have the biggest side of
+      *the biggest area.
+      *Once you have those two points you are bound with a side, and can
+      *'draw' the limit line parallel to that which bounds the rectangle
+      *and that limit line is assisted given that the other side of it
+      *has a red tile on it.
+
            OPEN INPUT inputfile.
            PERFORM UNTIL eofile > 0
              READ inputfile
@@ -55,71 +77,39 @@
              IF FUNCTION ABS(posix(idx - 1) - posix(idx)) > bigx THEN
                MOVE FUNCTION ABS(posix(idx - 1) - posix(idx)) TO bigx
                COMPUTE posbx = idx - 1
+               DISPLAY posbx
              END-IF
              IF FUNCTION ABS(posiy(idx - 1) - posiy(idx)) > bigy THEN
                MOVE FUNCTION ABS(posiy(idx - 1) - posiy(idx)) TO bigy
                COMPUTE posby = idx - 1
+               DISPLAY posby
              END-IF
            END-PERFORM.
-      *    IF bigx > bigy THEN
-      *      MOVE posbx TO posf
-      *      MOVE FUNCTION ABS(posix(posbx) - posix(posbx + 1) +1)
-      *      TO bigside
-      *    ELSE IF bigy > bigx THEN
-      *        MOVE posby TO posf
-      *        MOVE FUNCTION ABS(posiy(posby) - posiy(posby + 1) +1)
-      *        TO bigside
-      *      ELSE
-      *        DISPLAY "Looks like you have a square"
-      *      END-IF
-      *    END-IF
-           DISPLAY "Testing with " posbx "," posby
-             PERFORM VARYING idx FROM 1 BY 2 UNTIL idx > cnt
-               COMPUTE rect =
-                (FUNCTION ABS(posix(idx) - posix(posbx)) + 1) *
-                (FUNCTION ABS(posiy(idx) - posiy(posbx)) + 1)
-               IF rect > rectbiggest THEN
-                 DISPLAY "THIS RECTANGLE IS " rect
-                 DISPLAY
-                 "(" posix(idx) "," posiy(idx) "),"
-                 "(" posix(posbx) "," posiy(idx) "),"
-                 "(" posix(posbx) "," posiy(posbx) "),"
-                 "(" posix(idx) "," posiy(posbx) ")"
-                 DISPLAY " " posix(idx + 1) "," posiy(idx + 1)
-                 DISPLAY " " posix(idx - 1) "," posiy(idx - 1)
-                 DISPLAY " " posix(posbx + 1) "," posiy(posbx + 1)
-                 DISPLAY " " posix(posbx - 1) "," posiy(posbx - 1)
-                 MOVE rect TO rectbiggest
-               END-IF
-      *        IF posix(idx) = posix(posbx)
-      *        AND posix(idx + 1) = posix(posbx + 1)
-      *        THEN DISPLAY "SuccessX: " idx
-      *        IF posiy(idx) = posiy(posby)
-      *        AND posiy(idx + 1) = posiy(posby + 1)
-      *        THEN DISPLAY "SuccessY: " idx
+           DISPLAY "Testing " posbx "(" bigx ")," posby "(" bigy ")"
+      *    Get the vertical position in the region where we cannot go
+           PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > cnt
+             IF posix(posbx) > posix(idx) THEN
+               COMPUTE limx = idx - 1
+               MOVE cnt TO idx
+             END-IF
            END-PERFORM.
+      *    Get the horizontal position in the region where we cannot go
+           PERFORM VARYING idx FROM limx BY 1 UNTIL idx > cnt
+             IF posiy(idx) < posiy(limx) THEN
+               COMPUTE limy = idx
+      *    In case there is a more horizontal position at that height
+               PERFORM UNTIL posiy(idx) NOT= posiy(limy)
+                 ADD 1 TO limy
+               END-PERFORM
+      *    And bump it back again
+               SUBTRACT 1 FROM limy
+              MOVE cnt TO idx
+             END-IF
+           END-PERFORM.
+           DISPLAY limx ":" posix(posby) "," posiy(posby)
+           DISPLAY limy ":" posix(limy) "," posiy(limy)
+           COMPUTE rect =
+            (FUNCTION ABS(posix(posbx) - posix(limy)) + 1) *
+            (FUNCTION ABS(posiy(posby) - posiy(limy)) + 1)
+           DISPLAY "Limited rectangle:" rect
            STOP RUN.
-      *      COMPUTE rect =
-      *       (FUNCTION ABS(posix(idx) - posix(idx2)) + 1) *
-      *       (FUNCTION ABS(posiy(idx) - posiy(idx2)) + 1)
-      *      IF rect > rectbiggest THEN
-      *        DISPLAY "THIS RECTANGLE IS " rect
-      *        DISPLAY
-      *        "(" posix(idx) "," posiy(idx) "),"
-      *        "(" posix(idx2) "," posiy(idx) "),"
-      *        "(" posix(idx2) "," posiy(idx2) "),"
-      *        "(" posix(idx) "," posiy(idx2) ")"
-      *        IF posix(idx) > posix(idx2) THEN
-      *          IF posiy(idx) > posiy(idx2) THEN
-
-      *          ELSE
-
-      *          END-IF
-      *        ELSE
-      *        END-IF
-      *        DISPLAY " " posix(idx + 1) "," posiy(idx + 1)
-      *        DISPLAY " " posix(idx - 1) "," posiy(idx - 1)
-      *        DISPLAY " " posix(idx2 + 1) "," posiy(idx2 + 1)
-      *        DISPLAY " " posix(idx2 - 1) "," posiy(idx2 - 1)
-      *        MOVE rect TO rectbiggest
-      *      END-IF
