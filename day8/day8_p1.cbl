@@ -91,8 +91,10 @@
              MOVE circuitn TO circuit(idx)
             END-IF
            END-PERFORM.
-           PERFORM VARYING starti FROM 1 BY 1 UNTIL starti > 19
+           MOVE 2 TO starti
+           PERFORM UNTIL starti = 1
            DISPLAY starti
+           MOVE 1 TO starti
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > pairs
             PERFORM VARYING idx2 FROM 1 BY 1 UNTIL idx2 > pairs
              IF (origpos(idx) = origpos(idx2)
@@ -103,6 +105,7 @@
               IF circuit(idx) > circuit(idx2) OR circuit(idx) = 0 THEN
                DISPLAY pidx(idx) ", " pidx(idx2)
                MOVE circuit(idx2) TO circuit(idx)
+               ADD 1 TO starti
               END-IF
              END-IF
             END-PERFORM
