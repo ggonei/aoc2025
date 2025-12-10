@@ -1,5 +1,5 @@
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. day9-p1.
+       PROGRAM-ID. day9-p2.
 
        ENVIRONMENT DIVISION.
            INPUT-OUTPUT SECTION.
@@ -7,18 +7,11 @@
                SELECT inputfile ASSIGN TO '/'-
                'Users/georgeoneill/ess-dmsc/aoc2025/day9/input'
                  ORGANIZATION IS LINE SEQUENTIAL.
-               SELECT tmpfile ASSIGN TO tmpwork.
-               SELECT sortedfile ASSIGN TO '/'-
-               'Users/georgeoneill/ess-dmsc/aoc2025/day9/output'.
 
        DATA DIVISION.
            FILE SECTION.
              FD inputfile.
              01 instruction PIC X(12).
-             FD sortedfile.
-             01 instructions PIC X(12).
-             SD tmpfile.
-             01 instructiont PIC X(12).
 
            WORKING-STORAGE SECTION.
              01 eofile PIC 9(1) VALUE 0.
@@ -32,7 +25,7 @@
              01 idx PIC s9(6) VALUE 0.
              01 rect PIC s9(18) VALUE 0.
              01 positions.
-               02 coord OCCURS 1000 TIMES.
+               02 coord OCCURS 1001 TIMES.
                  03 posix PIC s9(6) VALUE 0.
                  03 posiy PIC s9(6) VALUE 0.
 
@@ -41,7 +34,10 @@
       *Not that bad! Spent a lot of time on the algorithm today
       *Anything better than yesterday...
       *A little surprised this result worked as I expected to need to
-      *work out from 3 choices.  Algorithm reasoning:
+      *work out from 3 choices.  In adding lines for the complex poly,
+      *I seem to have broken the test file pattern matching, as there is
+      *no longer a 'best of' loop.
+      *Algorithm reasoning:
       *Since the line is stated to be continuous it's not got holes in.
       *So only need to  worry about edge conditions.
       *The differential of the curve is not 'continuous' and at any area
@@ -77,12 +73,10 @@
              IF FUNCTION ABS(posix(idx - 1) - posix(idx)) > bigx THEN
                MOVE FUNCTION ABS(posix(idx - 1) - posix(idx)) TO bigx
                COMPUTE posbx = idx - 1
-               DISPLAY posbx
              END-IF
              IF FUNCTION ABS(posiy(idx - 1) - posiy(idx)) > bigy THEN
                MOVE FUNCTION ABS(posiy(idx - 1) - posiy(idx)) TO bigy
                COMPUTE posby = idx - 1
-               DISPLAY posby
              END-IF
            END-PERFORM.
            DISPLAY "Testing " posbx "(" bigx ")," posby "(" bigy ")"
@@ -90,6 +84,7 @@
            PERFORM VARYING idx FROM 1 BY 1 UNTIL idx > cnt
              IF posix(posbx) > posix(idx) THEN
                COMPUTE limx = idx - 1
+               IF limx = 0 THEN MOVE 1 TO limx END-IF
                MOVE cnt TO idx
              END-IF
            END-PERFORM.
@@ -103,13 +98,14 @@
                END-PERFORM
       *    And bump it back again
                SUBTRACT 1 FROM limy
-              MOVE cnt TO idx
+               MOVE cnt TO idx
              END-IF
            END-PERFORM.
-           DISPLAY limx ":" posix(posby) "," posiy(posby)
-           DISPLAY limy ":" posix(limy) "," posiy(limy)
+           IF limy = 0 THEN MOVE 1 TO limy END-IF.
+           DISPLAY limx ":" posix(posby) "," posiy(posby).
+           DISPLAY limy ":" posix(limy) "," posiy(limy).
            COMPUTE rect =
             (FUNCTION ABS(posix(posbx) - posix(limy)) + 1) *
-            (FUNCTION ABS(posiy(posby) - posiy(limy)) + 1)
-           DISPLAY "Limited rectangle:" rect
+            (FUNCTION ABS(posiy(posby) - posiy(limy)) + 1).
+           DISPLAY "Limited rectangle:" rect.
            STOP RUN.
